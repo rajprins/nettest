@@ -1,0 +1,10 @@
+testname: Network Test Invalid 1
+email: john.doe@email.com
+config:
+
+    - networkname: google
+    host: google.com
+    port: 80
+    path:
+    proto: http
+    capturebody: false

@@ -1,0 +1,33 @@
+testname: Network Test 1
+email: john.doe@email.com
+config:
+
+  - networkname: Google
+    host: google.com
+    port: 80
+    path:
+    proto: http
+    capturebody: false
+
+  - networkname: OpenWeatherMap
+    host: samples.openweathermap.org
+    port: 443
+    path: /data/2.5/weather?q=London,uk&appid=b6907d289e10d714a6e88b30761fae22
+    proto: https
+    capturebody: true
+
+  - networkname: Amazon
+    host: amazon.com
+    port: 443
+    path:
+    proto: https
+    capturebody: false
+  
+  - networkname: Ensembl public MySQL Servers
+    host: ensembldb.ensembl.org
+    port: 3306
+    path:
+    proto: tcp
+    capturebody: false
+
+  
