@@ -50,7 +50,7 @@ var outputDirectory string
 var logFlag bool
 
 // configLocation specifies where the nettest config (yaml) can be found;
-// default is `resources/config.yaml`
+// default is `config.yaml`
 var configLocation string
 
 // timeout overrides the timeout for all tcp & http requests. When unset,
@@ -61,7 +61,7 @@ var timeout int
 var versionFlag bool
 
 func init() {
-	flag.StringVar(&configLocation, "config", "resources/config.yaml", "Location of the nettest config file. Accepts a local file location or a HTTP web server location.")
+	flag.StringVar(&configLocation, "config", "config.yaml", "Location of the nettest config file. Accepts a local file location or a HTTP web server location.")
 	flag.StringVar(&outputDirectory, "directory", ".", "Directory to save the nettest report.")
 	flag.BoolVar(&logFlag, "log", false, "Prints test report to standard out.")
 	flag.IntVar(&timeout, "timeout", 10, "Timeout for all test endpoints. If not specified, setting in nettest config file is respected. If no value was specified in the nettest config for the given endpoint, the default is used.")
@@ -100,14 +100,14 @@ func intro() {
 func runTests(config TestConfig) []ResponseDetails {
 	var results []ResponseDetails
 
-	fmt.Printf("Running test '%s'\n", config.TestName)
-	for _, netTest := range config.Config {
+	fmt.Printf("Running test suite '%s'\n", config.TestName)
+	for testNr, netTest := range config.Config {
 		resp := ResponseDetails{}
 		lowerCaseProto := strings.ToLower(netTest.Proto)
 		if lowerCaseProto == "http" || lowerCaseProto == "https" {
-			resp = testHTTPConnection(netTest)
+			resp = testHTTPConnection(testNr, netTest)
 		} else if lowerCaseProto == "tcp" {
-			resp = testTCPConnection(netTest)
+			resp = testTCPConnection(testNr, netTest)
 		} else {
 			failureCause := fmt.Sprintf("Protocol \"%s\" specified for host \"%s\" is invalid. Must be tcp, http, or https.", lowerCaseProto, netTest.Host)
 			log.Printf(failureCause)
@@ -121,8 +121,8 @@ func runTests(config TestConfig) []ResponseDetails {
 }
 
 // testHTTPConnection is responsible for testing http connection using go's http client.
-func testHTTPConnection(test Configuration) ResponseDetails {
-	fmt.Printf("> Host: %s (%s)... ", test.Host, strings.ToUpper(test.Proto))
+func testHTTPConnection(testNr int, test Configuration) ResponseDetails {
+	fmt.Printf("[%d] Target: %s (%s)... ", (testNr + 1), test.Host, strings.ToUpper(test.Proto))
 
 	if test.Timeout == 0 {
 		test.Timeout = timeout
@@ -154,7 +154,7 @@ func testHTTPConnection(test Configuration) ResponseDetails {
 	resp, errClientReq := client.Do(req)
 
 	if errClientReq != nil {
-		log.Printf("\n[ERROR] Unable to access host: %s\n", errClientReq.Error())
+		log.Printf("\n[ERROR] Unable to access Target: %s\n", errClientReq.Error())
 		respDetails.FailureMessage = errClientReq.Error()
 	} else {
 		defer resp.Body.Close()
@@ -180,8 +180,8 @@ func testHTTPConnection(test Configuration) ResponseDetails {
 }
 
 // testTCPConnection is responsible for testing tcp connection using tcp.Dial.
-func testTCPConnection(test Configuration) ResponseDetails {
-	fmt.Printf("> Host: %s (%s)... ", test.Host, strings.ToUpper(test.Proto))
+func testTCPConnection(testNr int, test Configuration) ResponseDetails {
+	fmt.Printf("[%d] Target: %s (%s)... ", (testNr + 1), test.Host, strings.ToUpper(test.Proto))
 
 	if test.Timeout == 0 {
 		test.Timeout = timeout

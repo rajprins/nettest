@@ -26,7 +26,7 @@ func TestValidConfigParse(t *testing.T) {
 		t.Fatalf("Expected network name %s, found %s.", expectedNetworkName, actualNetworkName)
 	}
 	if actualPort != expectedPort {
-		t.Fatalf("Expected network name %s, found %s.", expectedPort, actualPort)
+		t.Fatalf("Expected network name %d, found %d.", expectedPort, actualPort)
 	}
 }
 

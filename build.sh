@@ -46,7 +46,7 @@ fi
 # Create tarball for platform
 if $dopackage ; then
     echo "- creating archive"
-    cp resources/config.yaml macos/
+    cp config.yaml macos/
     tar czf nettest-macos.tar.gz macos/* > /dev/null
     echo
 fi
@@ -71,7 +71,7 @@ fi
 # Create tarball for platform
 if $dopackage ; then
     echo "- creating archive"
-    cp resources/config.yaml windows/
+    cp config.yaml windows/
     zip nettest-windows.zip windows/* > /dev/null
     echo
 fi
@@ -96,7 +96,7 @@ fi
 # Create tarball for platform
 if $dopackage ; then
     echo "- creating archive"
-    cp resources/config.yaml linux/
+    cp config.yaml linux/
     tar czf nettest-linux.tar.gz linux/* > /dev/null
     echo
 fi
