@@ -1,4 +1,5 @@
 #!/bin/bash
+clear
 
 # Clean up old targets, if any
 echo "- cleaning up old targets"

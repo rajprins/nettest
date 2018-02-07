@@ -11,7 +11,6 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net"
 	"net/http"
 	"os"
@@ -79,7 +78,8 @@ func main() {
 
 	config, err := parseConfig(configLocation)
 	if err != nil {
-		log.Fatal("Program exiting due to nettest config file error.")
+		fmt.Printf("\nProgram exiting due to nettest config file error.\nPlease check your configuration file for errors.\n")
+		os.Exit(1)
 	}
 
 	results := runTests(config)
@@ -88,7 +88,7 @@ func main() {
 
 func intro() {
 	fmt.Printf("┌────────────────────────────────────────────────────────────────────────┐\n")
-	fmt.Printf("│ %sN E T T E S T%s                                                          │\n", CLR_RED, CLR_N)
+	fmt.Printf("│ %s// N E T T E S T //%s                                                    │\n", CLR_RED, CLR_N)
 	fmt.Printf("│ Network Connectivity Testing Utility v%s                              │\n", version)
 	fmt.Printf("└────────────────────────────────────────────────────────────────────────┘\n")
 }
@@ -100,7 +100,9 @@ func intro() {
 func runTests(config TestConfig) []ResponseDetails {
 	var results []ResponseDetails
 
-	fmt.Printf("Running test suite '%s'\n", config.TestName)
+	fmt.Printf("\n%sRunning test suite: %s%s\n", CLR_WHITE, config.TestName, CLR_N)
+	fmt.Printf("──────────────────────────────────────────────────────────────────────────\n")
+
 	for testNr, netTest := range config.Config {
 		resp := ResponseDetails{}
 		lowerCaseProto := strings.ToLower(netTest.Proto)
@@ -109,8 +111,8 @@ func runTests(config TestConfig) []ResponseDetails {
 		} else if lowerCaseProto == "tcp" {
 			resp = testTCPConnection(testNr, netTest)
 		} else {
-			failureCause := fmt.Sprintf("Protocol \"%s\" specified for host \"%s\" is invalid. Must be tcp, http, or https.", lowerCaseProto, netTest.Host)
-			log.Printf(failureCause)
+			failureCause := fmt.Sprintf("[%d] Configurstion error: protocol \"%s\" specified for host \"%s\" is invalid. Must be TCP, HTTP, or HTTPS.\n", testNr, lowerCaseProto, netTest.Host)
+			fmt.Printf(failureCause)
 			resp.Request = netTest
 			resp.FailureMessage = failureCause
 		}
@@ -138,7 +140,7 @@ func testHTTPConnection(testNr int, test Configuration) ResponseDetails {
 	url := fmt.Sprintf("%s://%s:%d%s", test.Proto, test.Host, test.Port, test.Path)
 	req, errRequest := http.NewRequest("GET", url, nil)
 	if errRequest != nil {
-		log.Printf("\n[ERROR] Unable to generate HTTP request for test %s. %s\n", test.NetworkName, errRequest.Error())
+		fmt.Printf("[%sFAILED%s]\nUnable to generate HTTP request for test %s. %s\n", CLR_RED, CLR_N, test.NetworkName, errRequest.Error())
 		respDetails.FailureMessage = errRequest.Error()
 		return respDetails
 	}
@@ -154,7 +156,7 @@ func testHTTPConnection(testNr int, test Configuration) ResponseDetails {
 	resp, errClientReq := client.Do(req)
 
 	if errClientReq != nil {
-		log.Printf("\n[ERROR] Unable to access Target: %s\n", errClientReq.Error())
+		fmt.Printf("[%sFAILED%s]\nUnable to access target: %s\n", CLR_RED, CLR_N, errClientReq.Error())
 		respDetails.FailureMessage = errClientReq.Error()
 	} else {
 		defer resp.Body.Close()
@@ -165,7 +167,7 @@ func testHTTPConnection(testNr int, test Configuration) ResponseDetails {
 			respBody, err := ioutil.ReadAll(resp.Body)
 			respDetails.Body = string(respBody)
 			if err != nil {
-				log.Printf("\n[ERROR] Unable to capture response body: %s\n", err.Error())
+				fmt.Printf("[%sFAILED%s]\nUnable to capture response body: %s\n", CLR_RED, CLR_N, err.Error())
 			} else {
 				fmt.Printf("[%sOK%s]\n", CLR_GREEN, CLR_N)
 			}
@@ -192,7 +194,7 @@ func testTCPConnection(testNr int, test Configuration) ResponseDetails {
 	_, err := net.DialTimeout("tcp", net.JoinHostPort(test.Host, strconv.Itoa(test.Port)), time.Duration(test.Timeout)*time.Second)
 
 	if err != nil {
-		log.Printf("\n[ERROR] Failed to access host via TCP: %s\n", err.Error())
+		fmt.Printf("[%sFAILED%s]\nUnable to access host via TCP: %s\n", CLR_RED, CLR_N, err.Error())
 		respDetails.FailureMessage = err.Error()
 	} else {
 		respDetails.Success = true
@@ -213,14 +215,16 @@ func generateReport(test TestConfig, results []ResponseDetails) {
 	resultOutput, err := os.Create(outputDirectory + logfile)
 
 	if err != nil {
-		log.Fatalf("Failed to create file. Exiting. %s", err.Error())
+		fmt.Printf("Error. Failed to create file %s: %s", logfile, err.Error())
+		os.Exit(1)
 	}
 
 	fmt.Fprintf(resultOutput, "Test suite: %s", test.TestName)
 
 	tmpl, err := template.New("outputReport").Parse(templText)
 	if err != nil {
-		log.Fatalf("Failed to parse output template. Exiting. %s", err.Error())
+		fmt.Printf("Failed to parse output template. Exiting. %s", err.Error())
+		os.Exit(1)
 	}
 
 	for _, testResult := range results {
