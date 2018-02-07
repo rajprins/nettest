@@ -30,17 +30,17 @@ const logfile string = "testresults.log"
 // Template used to generate output report
 const templText string = `
 =========================================================================================
-[TEST DETAILS]
-	Network tested         : {{.Request.NetworkName}}
-	Endpoint requested     : {{.Request.Proto}}://{{.Request.Host}}:{{.Request.Port}}{{.Request.Path}}
-	Connected successfully : {{.Success}}
-	Total request time     : {{.Time}}
-	Failure Message        : {{.FailureMessage}}
+[GENERIC TEST RESULTS]
+Network tested         : {{.Request.NetworkName}}
+Endpoint requested     : {{.Request.Proto}}://{{.Request.Host}}:{{.Request.Port}}{{.Request.Path}}
+Connected successfully : {{.Success}}
+Total request time     : {{.Time}}
+Failure Message        : {{.FailureMessage}}
 
-[HTTP ONLY DETAILS]
-	HTTP Status code       : {{.Status}}
-	IP-DNS resolution      : {{.IPResolvedStatus}}
-	Response body          : {{.Body}}
+[HTTP ONLY RESULTS]
+HTTP Status code       : {{.Status}}
+IP-DNS resolution      : {{.IPResolvedStatus}}
+Response body          : {{.Body}}
 `
 
 // outputDirectory is the location to write nettest output report.
@@ -216,7 +216,7 @@ func generateReport(test TestConfig, results []ResponseDetails) {
 		log.Fatalf("Failed to create file. Exiting. %s", err.Error())
 	}
 
-	fmt.Fprintf(resultOutput, "Test name: %s", test.TestName)
+	fmt.Fprintf(resultOutput, "Test suite: %s", test.TestName)
 
 	tmpl, err := template.New("outputReport").Parse(templText)
 	if err != nil {

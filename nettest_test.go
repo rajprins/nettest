@@ -31,7 +31,7 @@ func TestValidConfigParse(t *testing.T) {
 }
 
 func TestInvalidConfigParse(t *testing.T) {
-	_, err := parseConfig("testResources/invalidTestConfig.yaml")
+	_, err := parseConfig("resources/invalidTestConfig.yaml")
 	if err == nil {
 		t.Fatal("Config parsing returned a success for an invalid YAML file.")
 	}

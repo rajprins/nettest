@@ -1,6 +1,7 @@
 package main
 
 const (
+	//Color black
 	CLR_BLACK   string = "\x1b[30;1m"
 	CLR_RED     string = "\x1b[31;1m"
 	CLR_GREEN   string = "\x1b[32;1m"

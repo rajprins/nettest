@@ -39,30 +39,30 @@ or [Windows](https://github.com/rajprins/nettest/releases/download/v1.0/nettest-
 	```
 	Test name: Network Test Valid 1
 	=========================================================================================
-	[TEST DETAILS]
-		Network tested         : google
-		Endpoint requested     : http://google.com:80
-		Connected successfully : true
-		Total request time     : 88.212457ms
-		Failure Message        : 
+	[GENERIC TEST RESULTS]
+	Network tested         : google
+	Endpoint requested     : http://google.com:80
+	Connected successfully : true
+	Total request time     : 88.212457ms
+	Failure Message        : 
 
-	[HTTP ONLY DETAILS]
-		HTTP Status code       : 200
-		IP-DNS resolution      : 172.217.19.206
-		Response body          : 
+	[HTTP ONLY RESULTS]
+	HTTP Status code       : 200
+	IP-DNS resolution      : 172.217.19.206
+	Response body          : 
 
 	=========================================================================================
-	[TEST DETAILS]
-		Network tested         : amazon
-		Endpoint requested     : https://amazon.com:443
-		Connected successfully : true
-		Total request time     : 1.388307603s
-		Failure Message        : 
+	[GENERIC TEST RESULTS]
+	Network tested         : amazon
+	Endpoint requested     : https://amazon.com:443
+	Connected successfully : true
+	Total request time     : 1.388307603s
+	Failure Message        : 
 
-	[HTTP ONLY DETAILS]
-		HTTP Status code       : 200
-		IP-DNS resolution      : 176.32.98.166
-		Response body          : 
+	[HTTP ONLY RESULTS]
+	HTTP Status code       : 200
+	IP-DNS resolution      : 176.32.98.166
+	Response body          : 
 	```
 
 * See [Usage](#usage) and [Configuration file](#configuration-file) for more details..
